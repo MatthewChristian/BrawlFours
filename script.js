@@ -47,12 +47,11 @@ function deal(player,deck) {
   }
 }
 
-function dealAll(p1,p2,p3,p4,deck) {
+function dealAll(player,deck) {
   for (var i=0; i<2; i++) {
-    deal(p1,deck);
-    deal(p2,deck);
-    deal(p3,deck);
-    deal(p4,deck);
+    for (var j=0; j<4; j++) {
+      deal(player[j],deck);
+    }
   }
 }
 
@@ -66,19 +65,18 @@ function checkGame(t1,t2) { //Returns 1 if Team 1 won, 2 if Team 2 won, 0 if nob
 
 function mainGame(dealer) {
   let deck = createDeck();
-  let p1 = new Hand();
-  let p2 = new Hand();
-  let p3 = new Hand();
-  let p4 = new Hand();
+  let player = [];
+  for (var i=0; i<4; i++) {
+    player[i] = new Hand();
+  }
   let game=0;
   let team1Score = 0;
   let team2Score = 0;
-  dealAll(p1,p2,p3,p4,deck);
+  dealAll(player,deck);
   let kicked=deck.pop();
-  console.log("Player 1: ", p1.cards);
-  console.log("Player 2: ", p2.cards);
-  console.log("Player 3: ", p3.cards);
-  console.log("Player 4: ", p4.cards);
+  for (var i=0; i<4; i++) {
+    console.log("Player ", i+1, ": ", player[i].cards);
+  }
   console.log("Trump is:", kicked.Suit);
   console.log(kicked);
   if (kicked.Value == 6) {
