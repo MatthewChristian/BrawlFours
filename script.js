@@ -48,10 +48,8 @@ function deal(player,deck) {
 }
 
 function dealAll(player,deck) {
-  for (var i=0; i<2; i++) {
-    for (var j=0; j<4; j++) {
-      deal(player[j],deck);
-    }
+  for (var j=0; j<4; j++) {
+    deal(player[j],deck);
   }
 }
 
@@ -95,10 +93,12 @@ function mainGame(dealer) {
   let score = [];
   score[0] = 0; //Team 1 Score
   score[1] = 0; //Team 2 Score
-  dealAll(player,deck);
+  for (var i=0; i<2; i++) {
+    dealAll(player,deck);
+  }
   let kicked=deck.pop();
   for (var i=0; i<4; i++) {
-    console.log("Player ", i+1, ": ", player[i].cards);
+    console.log("Player", i+1, ": ", player[i].cards);
   }
   console.log("Trump is:", kicked.Suit);
   console.log(kicked);
