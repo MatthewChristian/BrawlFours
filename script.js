@@ -83,9 +83,36 @@ function checkKicked(kicked,score) {
   return score;
 }
 
-function mainGame(dealer) {
-  let deck = createDeck();
-  let player = [];
+function beg(player) {
+  displayPlayerCards(player);
+}
+
+function displayKickedCard(kicked) {
+  var kick;
+  kick = document.getElementById("kicked");
+  kick.innerHTML += "Kicked: " + kicked.Suit + kicked.Value;
+}
+
+function displayPlayerCards(player) {
+  var kick;
+  var players;
+  players = document.getElementsByClassName("hand");
+  for (var i=0; i<4; i++) {
+    players[i].innerHTML = "";
+  }
+  for (var i=0; i<4; i++) {
+    for (var j=0; j<player[i].cards.length; j++) {
+      players[i].innerHTML += player[i].cards[j].Value + " " + player[i].cards[j].Suit + ", ";
+    }
+  }
+}
+
+function displayCards(player,kicked) {
+  displayPlayerCards(player);
+  displayKickedCard(kicked);
+}
+
+function mainGame(player,deck,dealer) {
   for (var i=0; i<4; i++) {
     player[i] = new Hand();
   }
@@ -97,6 +124,7 @@ function mainGame(dealer) {
     dealAll(player,deck);
   }
   let kicked=deck.pop();
+  displayCards(player,kicked);
   for (var i=0; i<4; i++) {
     console.log("Player", i+1, ": ", player[i].cards);
   }
@@ -111,11 +139,20 @@ function mainGame(dealer) {
 
 let game=0;
 let dealer=1;
+let player = [];
+let deck=createDeck();
 //while (game == 0) {
-  game=mainGame(dealer);
+  game=mainGame(player,deck,dealer);
+
 /*  dealer++;
   if (dealer == 5)
     dealer=1;
+} 
+console.log("The winner is: ", game) 
+let begButton=document.getElementById("begButton");
+if (begButton) {
+  begButton.addEventListener("click", beg);
 }
-console.log("The winner is: ", game) */
+if (begged == true)
+  console.log(player[0].cards); */
 
