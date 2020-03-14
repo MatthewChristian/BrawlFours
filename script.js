@@ -1,17 +1,22 @@
 class Card {
-  constructor(power,hangable,points,trump,name,playable) {
+  constructor(power,hangable,points,trump,name) {
     this.power=power;
     this.hangable=hangable;
     this.points=points;
     this.trump=trump;
     this.name=name;
-    this.playable=playable;
+    this.playable=false;
   }
 }
 
 class Hand {
   constructor() {
     this.cards=[];
+    this.canPlay=false;
+  }
+
+  setCanPlay() {
+    canPlay=true;
   }
 }
 
@@ -102,7 +107,7 @@ function displayPlayerCards(player) {
   }
   for (var i=0; i<4; i++) {
     for (var j=0; j<player[i].cards.length; j++) {
-      players[i].innerHTML += player[i].cards[j].Value + " " + player[i].cards[j].Suit + ", ";
+      players[i].innerHTML += "<a class='card" + i +"'>" + player[i].cards[j].Value + " " + player[i].cards[j].Suit + `</a>, `;
     }
   }
 }
@@ -112,12 +117,30 @@ function displayCards(player,kicked) {
   displayKickedCard(kicked);
 }
 
+function displayPlayerTurn(playerTurn) {
+  playerTurn += 1;
+  document.getElementById("playerTurn").innerHTML = "It is player " + playerTurn + "'s turn.";
+}
+
+function playCard(playerTurn) {
+  turn="card"+playerTurn;
+  console.log(turn);
+  let cards = document.getElementsByClassName(turn);
+  for (var i=0; i<cards.length; i++) {
+    cards[i].addEventListener("click", function(){
+    document.getElementById("demo").innerHTML = "Clicked";
+  });
+  }
+}
+
+
 function mainGame(player,deck,dealer) {
   for (var i=0; i<4; i++) {
     player[i] = new Hand();
   }
   let game=0;
   let score = [];
+  let playerTurn=0;
   score[0] = 0; //Team 1 Score
   score[1] = 0; //Team 2 Score
   for (var i=0; i<2; i++) {
@@ -132,10 +155,11 @@ function mainGame(player,deck,dealer) {
   console.log(kicked);
   score=checkKicked(kicked,score);
   console.log(score[0]);
+  displayPlayerTurn(playerTurn);
+  playCard(playerTurn)
   game=checkGame(score);
   return game;
 }
-
 
 let game=0;
 let dealer=1;
@@ -143,16 +167,14 @@ let player = [];
 let deck=createDeck();
 //while (game == 0) {
   game=mainGame(player,deck,dealer);
-
 /*  dealer++;
-  if (dealer == 5)
+  if (dealer == 5) {
     dealer=1;
+  }
+  displayPlayerTurn(playerTurn);
+  game=0;
 } 
-console.log("The winner is: ", game) 
-let begButton=document.getElementById("begButton");
-if (begButton) {
-  begButton.addEventListener("click", beg);
-}
-if (begged == true)
-  console.log(player[0].cards); */
+console.log("The winner is: ", game); */
+
+
 
