@@ -88,8 +88,9 @@ function checkKicked(kicked,score) {
   return score;
 }
 
-function beg(player) {
+function beg(player,playerTurn) {
   displayPlayerCards(player);
+  playCard(playerTurn);
 }
 
 function displayKickedCard(kicked) {
@@ -128,19 +129,19 @@ function playCard(playerTurn) {
   let cards = document.getElementsByClassName(turn);
   for (var i=0; i<cards.length; i++) {
     cards[i].addEventListener("click", function(){
-    document.getElementById("demo").innerHTML = "Clicked";
+    document.getElementById("demo").innerHTML = "Clicked " + this.innerHTML;
+    console.log(i + cards[0].innerHTML);
   });
   }
 }
 
 
-function mainGame(player,deck,dealer) {
+function mainGame(player,deck,dealer,playerTurn) {
   for (var i=0; i<4; i++) {
     player[i] = new Hand();
   }
   let game=0;
   let score = [];
-  let playerTurn=0;
   score[0] = 0; //Team 1 Score
   score[1] = 0; //Team 2 Score
   for (var i=0; i<2; i++) {
@@ -162,11 +163,12 @@ function mainGame(player,deck,dealer) {
 }
 
 let game=0;
-let dealer=1;
+let dealer=0;
+let playerTurn=0;
 let player = [];
 let deck=createDeck();
 //while (game == 0) {
-  game=mainGame(player,deck,dealer);
+  game=mainGame(player,deck,dealer,playerTurn);
 /*  dealer++;
   if (dealer == 5) {
     dealer=1;
