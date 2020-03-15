@@ -21,8 +21,8 @@ class Hand {
 }
 
 function createDeck() {
-  var suits = ["spades", "dimes", "clubs", "hearts"];
-  var values = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
+  var suits = ["s", "d", "c", "h"]; //S=Spades, D=Dimes, C=Clubs, H=Hearts
+  var values = ["2", "3", "4", "5", "6", "7", "8", "9", "X", "J", "Q", "K", "A"]; //X=10, This is done so it is 1 character
   var deck = new Array();
   for (var i=0; i<suits.length; i++) {
     for (var j=0; j<values.length; j++) {
@@ -93,6 +93,12 @@ function beg(player,playerTurn) {
   playCard(playerTurn);
 }
 
+function createCardId(cards) {
+  var id;
+  id=cards.Suit+cards.Value;
+  return id;
+}
+
 function displayKickedCard(kicked) {
   var kick;
   kick = document.getElementById("kicked");
@@ -102,13 +108,15 @@ function displayKickedCard(kicked) {
 function displayPlayerCards(player) {
   var kick;
   var players;
+  var id;
   players = document.getElementsByClassName("hand");
   for (var i=0; i<4; i++) {
     players[i].innerHTML = "";
   }
   for (var i=0; i<4; i++) {
     for (var j=0; j<player[i].cards.length; j++) {
-      players[i].innerHTML += "<a class='card" + i +"'>" + player[i].cards[j].Value + " " + player[i].cards[j].Suit + `</a>, `;
+      id=createCardId(player[i].cards[j]);
+      players[i].innerHTML += "<a id='" + id + "' class='card" + i +"'>" + player[i].cards[j].Suit + " " + player[i].cards[j].Value + `</a>, `;
     }
   }
 }
@@ -125,18 +133,28 @@ function displayPlayerTurn(playerTurn) {
 
 function playCard(playerTurn,player) {
   let turn="card"+playerTurn;
-  var cardPlayed; 
+  var cardPlayed;
+  var card; 
   playerTurn+=1;
   console.log(turn);
   let cards = document.getElementsByClassName(turn);
   for (var i=0; i<cards.length; i++) {
     cards[i].addEventListener("click", function(){
     document.getElementById("demo").innerHTML = "Player " + playerTurn + " played " + this.innerHTML;
-    console.log(this);
-    cardPlayed=player[playerTurn-1].cards.splice(player[playerTurn-1].cards.indexOf(this),1);
+    cardPlayed=getCard(this.id);
     console.log(cardPlayed);
+    let card = player[playerTurn-1].cards.findIndex( element => element.Suit === cardPlayed.Suit && element.Value === cardPlayed.Value);
+    player[playerTurn-1].cards.splice(card,1);
+    console.log(player[0].cards);
   });
   }
+}
+
+function getCard(cardId) {
+  let suit=cardId.charAt(0);
+  let value=cardId.charAt(1);
+  var card={Suit: suit, Value: value};
+  return card;
 }
 
 function mainGame(player,deck,dealer,playerTurn) {
