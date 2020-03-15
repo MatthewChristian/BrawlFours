@@ -90,7 +90,7 @@ function checkKicked(kicked,score) {
 
 function beg(player,playerTurn) {
   displayPlayerCards(player);
-  playCard(playerTurn);
+  playCard(playerTurn,player);
 }
 
 function createCardId(cards) {
@@ -127,25 +127,28 @@ function displayCards(player,kicked) {
 }
 
 function displayPlayerTurn(playerTurn) {
-  playerTurn += 1;
-  document.getElementById("playerTurn").innerHTML = "It is player " + playerTurn + "'s turn.";
+  playerTurnDisplay = playerTurn+1;
+  document.getElementById("playerTurn").innerHTML = "It is player " + playerTurnDisplay + "'s turn.";
 }
 
 function playCard(playerTurn,player) {
   let turn="card"+playerTurn;
   var cardPlayed;
-  var card; 
-  playerTurn+=1;
-  console.log(turn);
+  var card;
+  var playerTurnDisplay = playerTurn+1; 
   let cards = document.getElementsByClassName(turn);
   for (var i=0; i<cards.length; i++) {
     cards[i].addEventListener("click", function(){
-    document.getElementById("demo").innerHTML = "Player " + playerTurn + " played " + this.innerHTML;
+    document.getElementById("demo").innerHTML = "Player " + playerTurnDisplay + " played " + this.innerHTML;
     cardPlayed=getCard(this.id);
-    console.log(cardPlayed);
-    let card = player[playerTurn-1].cards.findIndex( element => element.Suit === cardPlayed.Suit && element.Value === cardPlayed.Value);
-    player[playerTurn-1].cards.splice(card,1);
+    console.log("PT: " + playerTurn);
+    console.log("Card Played: " + cardPlayed.Suit + cardPlayed.Value);
+    console.log(player[playerTurn].cards[0].Suit);
+    let card = player[playerTurn].cards.findIndex( element => element.Suit === cardPlayed.Suit && element.Value === cardPlayed.Value);
+    player[playerTurn].cards.splice(card,1);
     console.log(player[0].cards);
+    displayPlayerCards(player);
+    playCard(playerTurn,player);
   });
   }
 }
