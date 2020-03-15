@@ -123,18 +123,21 @@ function displayPlayerTurn(playerTurn) {
   document.getElementById("playerTurn").innerHTML = "It is player " + playerTurn + "'s turn.";
 }
 
-function playCard(playerTurn) {
-  turn="card"+playerTurn;
+function playCard(playerTurn,player) {
+  let turn="card"+playerTurn;
+  var cardPlayed; 
+  playerTurn+=1;
   console.log(turn);
   let cards = document.getElementsByClassName(turn);
   for (var i=0; i<cards.length; i++) {
     cards[i].addEventListener("click", function(){
-    document.getElementById("demo").innerHTML = "Clicked " + this.innerHTML;
-    console.log(i + cards[0].innerHTML);
+    document.getElementById("demo").innerHTML = "Player " + playerTurn + " played " + this.innerHTML;
+    console.log(this);
+    cardPlayed=player[playerTurn-1].cards.splice(player[playerTurn-1].cards.indexOf(this),1);
+    console.log(cardPlayed);
   });
   }
 }
-
 
 function mainGame(player,deck,dealer,playerTurn) {
   for (var i=0; i<4; i++) {
@@ -153,11 +156,9 @@ function mainGame(player,deck,dealer,playerTurn) {
     console.log("Player", i+1, ": ", player[i].cards);
   }
   console.log("Trump is:", kicked.Suit);
-  console.log(kicked);
   score=checkKicked(kicked,score);
-  console.log(score[0]);
   displayPlayerTurn(playerTurn);
-  playCard(playerTurn)
+  playCard(playerTurn,player)
   game=checkGame(score);
   return game;
 }
