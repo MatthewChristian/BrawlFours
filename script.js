@@ -66,6 +66,20 @@ function checkGame(score) { //Returns 1 if Team 1 won, 2 if Team 2 won, 0 if nob
   return 0;
 }
 
+function checkLift(lift) {
+  var highest=0;
+  var highIndex=0;
+  for (var i=0; i<4; i++) {
+    if (lift[i] > highest) {
+      highest=lift[i];
+      highIndex=i;
+    }
+  }
+  //lift[4]+=team1;
+  //lift[5]+=team2;
+  return highIndex;
+}
+
 function checkKicked(kicked,score) {
   if (kicked.Value == 6) {
     if (dealer == 1 || dealer == 3)
@@ -88,9 +102,9 @@ function checkKicked(kicked,score) {
   return score;
 }
 
-function beg(player,playerTurn) {
+function beg(player,playerTurn,lift) {
   displayPlayerCards(player);
-  playCard(playerTurn,player);
+  playCard(playerTurn,player,lift);
 }
 
 function createCardId(cards) {
@@ -131,27 +145,91 @@ function displayPlayerTurn(playerTurn) {
   document.getElementById("playerTurn").innerHTML = "It is player " + playerTurnDisplay + "'s turn.";
 }
 
-function playCard(playerTurn,player) {
+function getLift(lift,cardPlayed,playerTurn) {
+  if (cardPlayed.Value === "2") {
+    lift[playerTurn] = 2;
+  }
+  else if (cardPlayed.Value === "3") {
+    lift[playerTurn] = 3;
+  }
+  else if (cardPlayed.Value === "4") {
+    lift[playerTurn] = 4;
+  }
+  else if (cardPlayed.Value === "5") {
+    lift[playerTurn] = 5;
+  }
+  else if (cardPlayed.Value === "6") {
+    lift[playerTurn] = 6;
+  }
+  else if (cardPlayed.Value === "7") {
+    lift[playerTurn] = 7;
+  }
+  else if (cardPlayed.Value === "8") {
+    lift[playerTurn] = 8;
+  }
+  else if (cardPlayed.Value === "9") {
+    lift[playerTurn] = 9;
+  }
+  else if (cardPlayed.Value === "X") {
+    lift[playerTurn] = 10;
+  }
+  else if (cardPlayed.Value === "J") {
+    lift[playerTurn] = 11;
+  }
+  else if (cardPlayed.Value === "Q") {
+    lift[playerTurn] = 12;
+  }
+  else if (cardPlayed.Value === "K") {
+    lift[playerTurn] = 13;
+  }
+  else if (cardPlayed.Value === "A") {
+    lift[playerTurn] = 14;
+  }
+}
+
+function playCard(playerTurn,player,lift) {
   let turn="card"+playerTurn;
   var cardPlayed;
   var card;
+  var liftWinner;
   let playerTurnDisplay = playerTurn+1; 
   let played = "played" + playerTurnDisplay;
   let cards = document.getElementsByClassName(turn);
   for (var i=0; i<cards.length; i++) {
     cards[i].addEventListener("click", function(){
+    if (played == "played1") {
+      document.getElementById("played2").innerHTML = "";
+      document.getElementById("played3").innerHTML = "";
+      document.getElementById("played4").innerHTML = "";
+    }
     document.getElementById(played).innerHTML = "Player " + playerTurnDisplay + " played " + this.innerHTML;
     cardPlayed=getCard(this.id);
     let card = player[playerTurn].cards.findIndex( element => element.Suit === cardPlayed.Suit && element.Value === cardPlayed.Value);
     player[playerTurn].cards.splice(card,1);
     console.log(player[0].cards);
+    getLift(lift,cardPlayed,playerTurn);
+    console.log("Lift: " + lift[0], lift[1], lift[2], lift[3]);
     playerTurn+=1;
     if (playerTurn == 4) {
       playerTurn=0;
+      liftWinner=checkLift(lift);
+      console.log(liftWinner);
+      if (liftWinner == 0) {
+        document.getElementById("liftWinner").innerHTML = "Player 1 won the lift for Team 1";
+      }
+      else if (liftWinner == 1){
+        document.getElementById("liftWinner").innerHTML = "Player 2 won the lift for Team 2";
+      }
+      else if (liftWinner == 2){
+        document.getElementById("liftWinner").innerHTML = "Player 3 won the lift for Team 1";
+      }
+      else if (liftWinner == 3){
+        document.getElementById("liftWinner").innerHTML = "Player 4 won the lift for Team 2";
+      }
     }
     displayPlayerTurn(playerTurn);
     displayPlayerCards(player);
-    playCard(playerTurn,player);
+    playCard(playerTurn,player,lift);
   });
   }
 }
@@ -163,7 +241,7 @@ function getCard(cardId) {
   return card;
 }
 
-function mainGame(player,deck,dealer,playerTurn) {
+function mainGame(player,deck,dealer,playerTurn,lift) {
   for (var i=0; i<4; i++) {
     player[i] = new Hand();
   }
@@ -182,7 +260,7 @@ function mainGame(player,deck,dealer,playerTurn) {
   console.log("Trump is:", kicked.Suit);
   score=checkKicked(kicked,score);
   displayPlayerTurn(playerTurn);
-  playCard(playerTurn,player)
+  playCard(playerTurn,player,lift);
   game=checkGame(score);
   return game;
 }
@@ -191,9 +269,10 @@ let game=0;
 let dealer=0;
 let playerTurn=0;
 let player = [];
+let lift = [0,0,0,0,0,0]; //Index 0 - 3 = Players 1 - 4 points, Index 4 = Team 1 total points for game, Index 5 = Team 2 total points for game
 let deck=createDeck();
 //while (game == 0) {
-  game=mainGame(player,deck,dealer,playerTurn);
+  game=mainGame(player,deck,dealer,playerTurn,lift);
 /*  dealer++;
   if (dealer == 5) {
     dealer=1;
