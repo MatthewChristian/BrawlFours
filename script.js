@@ -107,7 +107,7 @@ function beg(player,playerTurn,lift,deck) {
   displayPlayerCards(player);
   let kicked=deck.pop();
   displayKickedCard(kicked);
-  playCard(playerTurn,player,lift);
+  playCard(playerTurn,player,lift,called);
 }
 
 function createCardId(cards) {
@@ -190,50 +190,72 @@ function getLift(lift,cardPlayed,playerTurn) {
   }
 }
 
-function playCard(playerTurn,player,lift) {
+function playCard(playerTurn,player,lift,called) {
   let turn="card"+playerTurn;
   var cardPlayed;
   var card;
+  var hand;
+  var bare=true;
+  var calledTemp;
   var liftWinner;
   let playerTurnDisplay = playerTurn+1; 
   let played = "played" + playerTurnDisplay;
   let cards = document.getElementsByClassName(turn);
   for (var i=0; i<cards.length; i++) {
-    cards[i].addEventListener("click", function(){
-    if (played == "played1") {
-      document.getElementById("played2").innerHTML = "";
-      document.getElementById("played3").innerHTML = "";
-      document.getElementById("played4").innerHTML = "";
-    }
-    document.getElementById(played).innerHTML = "Player " + playerTurnDisplay + " played " + this.innerHTML;
-    cardPlayed=getCard(this.id);
-    let card = player[playerTurn].cards.findIndex( element => element.Suit === cardPlayed.Suit && element.Value === cardPlayed.Value);
-    player[playerTurn].cards.splice(card,1);
-    console.log(player[0].cards);
-    getLift(lift,cardPlayed,playerTurn);
-    console.log("Lift: " + lift[0], lift[1], lift[2], lift[3]);
-    playerTurn+=1;
-    if (playerTurn == 4) {
-      playerTurn=0;
-      liftWinner=checkLift(lift);
-      console.log(liftWinner);
-      if (liftWinner == 0) {
-        document.getElementById("liftWinner").innerHTML = "Player 1 won the lift for Team 1";
-      }
-      else if (liftWinner == 1){
-        document.getElementById("liftWinner").innerHTML = "Player 2 won the lift for Team 2";
-      }
-      else if (liftWinner == 2){
-        document.getElementById("liftWinner").innerHTML = "Player 3 won the lift for Team 1";
-      }
-      else if (liftWinner == 3){
-        document.getElementById("liftWinner").innerHTML = "Player 4 won the lift for Team 2";
+    if (called !== "any") {
+      for (var j=0; j<cards.length; j++) {
+        hand=cards[j].id;
+        if (hand.charAt(0) == called) {
+          bare=false;
+        }
       }
     }
-    displayPlayerTurn(playerTurn);
-    displayPlayerCards(player);
-    playCard(playerTurn,player,lift);
-  });
+    if (bare == true) {
+      calledTemp = "any";
+    }
+    hand=cards[i].id;
+    if (hand.charAt(0) == called || called == "any" || calledTemp == "any") {
+      cards[i].addEventListener("click", function(){
+      if (played == "played1") {
+        document.getElementById("played2").innerHTML = "";
+        document.getElementById("played3").innerHTML = "";
+        document.getElementById("played4").innerHTML = "";
+      }
+      document.getElementById(played).innerHTML = "Player " + playerTurnDisplay + " played " + this.innerHTML;
+      cardPlayed=getCard(this.id);
+      if (called == "any") {
+        called=cardPlayed.Suit;
+      }
+      let card = player[playerTurn].cards.findIndex( element => element.Suit === cardPlayed.Suit && element.Value === cardPlayed.Value);
+      player[playerTurn].cards.splice(card,1);
+      console.log(player[0].cards);
+      getLift(lift,cardPlayed,playerTurn);
+      console.log("Lift: " + lift[0], lift[1], lift[2], lift[3]);
+      playerTurn+=1;
+      if (playerTurn == 4) {
+        playerTurn=0;
+        called="any";
+        liftWinner=checkLift(lift);
+        console.log(liftWinner);
+        if (liftWinner == 0) {
+          document.getElementById("liftWinner").innerHTML = "Player 1 won the lift for Team 1";
+        }
+        else if (liftWinner == 1){
+          document.getElementById("liftWinner").innerHTML = "Player 2 won the lift for Team 2";
+        }
+        else if (liftWinner == 2){
+          document.getElementById("liftWinner").innerHTML = "Player 3 won the lift for Team 1";
+        }
+        else if (liftWinner == 3){
+          document.getElementById("liftWinner").innerHTML = "Player 4 won the lift for Team 2";
+        }
+      }
+      calledTemp="";
+      displayPlayerTurn(playerTurn);
+      displayPlayerCards(player);
+      playCard(playerTurn,player,lift,called);
+    });
+    }
   }
 }
 
@@ -257,13 +279,13 @@ function mainGame(player,deck,dealer,playerTurn,lift) {
   }
   let kicked=deck.pop();
   displayCards(player,kicked);
-  for (var i=0; i<4; i++) {
+  /* for (var i=0; i<4; i++) {
     console.log("Player", i+1, ": ", player[i].cards);
   }
-  console.log("Trump is:", kicked.Suit);
+  console.log("Trump is:", kicked.Suit); */
   score=checkKicked(kicked,score);
   displayPlayerTurn(playerTurn);
-  playCard(playerTurn,player,lift);
+  playCard(playerTurn,player,lift,"any");
   game=checkGame(score);
   return game;
 }
