@@ -102,8 +102,11 @@ function checkKicked(kicked,score) {
   return score;
 }
 
-function beg(player,playerTurn,lift) {
+function beg(player,playerTurn,lift,deck) {
+  dealAll(player,deck);
   displayPlayerCards(player);
+  let kicked=deck.pop();
+  displayKickedCard(kicked);
   playCard(playerTurn,player,lift);
 }
 
@@ -116,7 +119,7 @@ function createCardId(cards) {
 function displayKickedCard(kicked) {
   var kick;
   kick = document.getElementById("kicked");
-  kick.innerHTML += "Kicked: " + kicked.Suit + kicked.Value;
+  kick.innerHTML = "Kicked: " + kicked.Suit + kicked.Value;
 }
 
 function displayPlayerCards(player) {
