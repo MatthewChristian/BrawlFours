@@ -20,6 +20,16 @@ class Hand {
   }
 }
 
+class History {
+  constructor() {
+    this.played="Nothing";
+  }
+
+  setPlayed(card) {
+    this.played=card;
+  }
+}
+
 function createDeck() {
   var suits = ["s", "d", "c", "h"]; //S=Spades, D=Dimes, C=Clubs, H=Hearts
   var values = ["2", "3", "4", "5", "6", "7", "8", "9", "X", "J", "Q", "K", "A"]; //X=10, This is done so it is 1 character
@@ -90,7 +100,7 @@ function checkKicked(kicked,score) {
 
 function beg(player,playerTurn) {
   displayPlayerCards(player);
-  playCard(playerTurn,player);
+  playCard(playerTurn,player,history);
 }
 
 function createCardId(cards) {
@@ -102,7 +112,7 @@ function createCardId(cards) {
 function displayKickedCard(kicked) {
   var kick;
   kick = document.getElementById("kicked");
-  kick.innerHTML += "Kicked: " + kicked.Suit + kicked.Value;
+  kick.innerHTML = "Kicked: " + kicked.Suit + kicked.Value;
 }
 
 function displayPlayerCards(player) {
@@ -116,7 +126,7 @@ function displayPlayerCards(player) {
   for (var i=0; i<4; i++) {
     for (var j=0; j<player[i].cards.length; j++) {
       id=createCardId(player[i].cards[j]);
-      players[i].innerHTML += "<a id='" + id + "' class='card" + i +"'>" + player[i].cards[j].Suit + " " + player[i].cards[j].Value + `</a>, `;
+      players[i].innerHTML += "<a onclick='playCard(playerTurn,player)' id='" + id + "' class='card" + i +"'>" + player[i].cards[j].Suit + " " + player[i].cards[j].Value + `</a>, `;
     }
   }
 }
@@ -131,7 +141,7 @@ function displayPlayerTurn(playerTurn) {
   document.getElementById("playerTurn").innerHTML = "It is player " + playerTurnDisplay + "'s turn.";
 }
 
-function playCard(playerTurn,player) {
+function playCard(playerTurn,player,history) {
   let turn="card"+playerTurn;
   var cardPlayed;
   var card;
@@ -151,7 +161,9 @@ function playCard(playerTurn,player) {
     }
     displayPlayerTurn(playerTurn);
     displayPlayerCards(player);
-    playCard(playerTurn,player);
+    history.setPlayed(cardPlayed);
+    console.log("History: " + history.played.Suit + history.played.Value);
+    playCard(playerTurn,player,history);
   });
   }
 }
@@ -163,12 +175,13 @@ function getCard(cardId) {
   return card;
 }
 
-function mainGame(player,deck,dealer,playerTurn) {
+function mainGame(player,deck,dealer,playerTurn,history) {
   for (var i=0; i<4; i++) {
     player[i] = new Hand();
   }
   let game=0;
   let score = [];
+  var cardPlayed;
   score[0] = 0; //Team 1 Score
   score[1] = 0; //Team 2 Score
   for (var i=0; i<2; i++) {
@@ -182,7 +195,8 @@ function mainGame(player,deck,dealer,playerTurn) {
   console.log("Trump is:", kicked.Suit);
   score=checkKicked(kicked,score);
   displayPlayerTurn(playerTurn);
-  playCard(playerTurn,player)
+  playCard(playerTurn,player,history);
+  console.log("History: " + history.played);
   game=checkGame(score);
   return game;
 }
@@ -191,9 +205,11 @@ let game=0;
 let dealer=0;
 let playerTurn=0;
 let player = [];
+let history = new History();
 let deck=createDeck();
+console.log("History: " + history.played);
 //while (game == 0) {
-  game=mainGame(player,deck,dealer,playerTurn);
+  game=mainGame(player,deck,dealer,playerTurn,history);
 /*  dealer++;
   if (dealer == 5) {
     dealer=1;
