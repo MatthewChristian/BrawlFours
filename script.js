@@ -135,18 +135,21 @@ function playCard(playerTurn,player) {
   let turn="card"+playerTurn;
   var cardPlayed;
   var card;
-  var playerTurnDisplay = playerTurn+1; 
+  let playerTurnDisplay = playerTurn+1; 
+  let played = "played" + playerTurnDisplay;
   let cards = document.getElementsByClassName(turn);
   for (var i=0; i<cards.length; i++) {
     cards[i].addEventListener("click", function(){
-    document.getElementById("demo").innerHTML = "Player " + playerTurnDisplay + " played " + this.innerHTML;
+    document.getElementById(played).innerHTML = "Player " + playerTurnDisplay + " played " + this.innerHTML;
     cardPlayed=getCard(this.id);
-    console.log("PT: " + playerTurn);
-    console.log("Card Played: " + cardPlayed.Suit + cardPlayed.Value);
-    console.log(player[playerTurn].cards[0].Suit);
     let card = player[playerTurn].cards.findIndex( element => element.Suit === cardPlayed.Suit && element.Value === cardPlayed.Value);
     player[playerTurn].cards.splice(card,1);
     console.log(player[0].cards);
+    playerTurn+=1;
+    if (playerTurn == 4) {
+      playerTurn=0;
+    }
+    displayPlayerTurn(playerTurn);
     displayPlayerCards(player);
     playCard(playerTurn,player);
   });
