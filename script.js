@@ -102,7 +102,7 @@ function checkKicked(kicked,score) {
   return score;
 }
 
-function beg(player,playerTurn,lift,deck) {
+function beg(player,playerTurn,lift,deck,called) {
   dealAll(player,deck);
   displayPlayerCards(player);
   let kicked=deck.pop();
