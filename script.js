@@ -148,45 +148,50 @@ function displayPlayerTurn(playerTurn) {
   document.getElementById("playerTurn").innerHTML = "It is player " + playerTurnDisplay + "'s turn.";
 }
 
-function getLift(lift,cardPlayed,playerTurn) {
-  if (cardPlayed.Value === "2") {
-    lift[playerTurn] = 2;
+function getLift(lift,cardPlayed,playerTurn,called) {
+  if (cardPlayed.Suit === called) {
+    if (cardPlayed.Value === "2") {
+      lift[playerTurn] = 2;
+    }
+    else if (cardPlayed.Value === "3") {
+      lift[playerTurn] = 3;
+    }
+    else if (cardPlayed.Value === "4") {
+      lift[playerTurn] = 4;
+    }
+    else if (cardPlayed.Value === "5") {
+      lift[playerTurn] = 5;
+    }
+    else if (cardPlayed.Value === "6") {
+      lift[playerTurn] = 6;
+    }
+    else if (cardPlayed.Value === "7") {
+      lift[playerTurn] = 7;
+    }
+    else if (cardPlayed.Value === "8") {
+      lift[playerTurn] = 8;
+    }
+    else if (cardPlayed.Value === "9") {
+      lift[playerTurn] = 9;
+    }
+    else if (cardPlayed.Value === "X") {
+      lift[playerTurn] = 10;
+    }
+    else if (cardPlayed.Value === "J") {
+      lift[playerTurn] = 11;
+    }
+    else if (cardPlayed.Value === "Q") {
+      lift[playerTurn] = 12;
+    }
+    else if (cardPlayed.Value === "K") {
+      lift[playerTurn] = 13;
+    }
+    else if (cardPlayed.Value === "A") {
+      lift[playerTurn] = 14;
+    }
   }
-  else if (cardPlayed.Value === "3") {
-    lift[playerTurn] = 3;
-  }
-  else if (cardPlayed.Value === "4") {
-    lift[playerTurn] = 4;
-  }
-  else if (cardPlayed.Value === "5") {
-    lift[playerTurn] = 5;
-  }
-  else if (cardPlayed.Value === "6") {
-    lift[playerTurn] = 6;
-  }
-  else if (cardPlayed.Value === "7") {
-    lift[playerTurn] = 7;
-  }
-  else if (cardPlayed.Value === "8") {
-    lift[playerTurn] = 8;
-  }
-  else if (cardPlayed.Value === "9") {
-    lift[playerTurn] = 9;
-  }
-  else if (cardPlayed.Value === "X") {
-    lift[playerTurn] = 10;
-  }
-  else if (cardPlayed.Value === "J") {
-    lift[playerTurn] = 11;
-  }
-  else if (cardPlayed.Value === "Q") {
-    lift[playerTurn] = 12;
-  }
-  else if (cardPlayed.Value === "K") {
-    lift[playerTurn] = 13;
-  }
-  else if (cardPlayed.Value === "A") {
-    lift[playerTurn] = 14;
+  else {
+    lift[playerTurn] = 0;
   }
 }
 
@@ -229,7 +234,7 @@ function playCard(playerTurn,player,lift,called) {
       let card = player[playerTurn].cards.findIndex( element => element.Suit === cardPlayed.Suit && element.Value === cardPlayed.Value);
       player[playerTurn].cards.splice(card,1);
       console.log(player[0].cards);
-      getLift(lift,cardPlayed,playerTurn);
+      getLift(lift,cardPlayed,playerTurn,called);
       console.log("Lift: " + lift[0], lift[1], lift[2], lift[3]);
       playerTurn+=1;
       if (playerTurn == 4) {
