@@ -203,10 +203,9 @@ function playCard(playerTurn,player,lift,called,count) {
   var bare=true;
   var calledTemp;
   var liftWinner;
-  let prevWinner = "";
-  var prevWinNum;
+  var countPlayed;
   let playerTurnDisplay = playerTurn+1; 
-  let played = "played" + playerTurnDisplay;
+  var played;
   let cards = document.getElementsByClassName(turn);
   for (var i=0; i<cards.length; i++) {
     if (called !== "any") {
@@ -223,7 +222,9 @@ function playCard(playerTurn,player,lift,called,count) {
     hand=cards[i].id;
     if (hand.charAt(0) == called || called == "any" || calledTemp == "any") {
       cards[i].addEventListener("click", function(){
-      if (played == prevWinner) {
+      countPlayed=count+1;
+      played = "played" + countPlayed;
+      if (count == 0) {
         document.getElementById("played1").innerHTML = "";
         document.getElementById("played2").innerHTML = "";
         document.getElementById("played3").innerHTML = "";
@@ -248,10 +249,10 @@ function playCard(playerTurn,player,lift,called,count) {
         count=0;
         called="any";
         liftWinner=checkLift(lift);
-        console.log(liftWinner);
         playerTurn=liftWinner;
-        prevWinNum=liftWinner+1;
-        prevWinner="played"+prevWinNum;
+        //prevWinNum=liftWinner+1;
+        //prevWinner="played"+prevWinNum;
+        //console.log("PW: " + prevWinner);
         if (liftWinner == 0) {
           document.getElementById("liftWinner").innerHTML = "Player 1 won the lift for Team 1";
         }
