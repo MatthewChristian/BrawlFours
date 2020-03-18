@@ -107,7 +107,7 @@ function beg(player,playerTurn,lift,deck,called) {
   displayPlayerCards(player);
   let kicked=deck.pop();
   displayKickedCard(kicked);
-  playCard(playerTurn,player,lift,called);
+  playCard(playerTurn,player,lift,called,0);
 }
 
 function createCardId(cards) {
@@ -195,7 +195,7 @@ function getLift(lift,cardPlayed,playerTurn,called) {
   }
 }
 
-function playCard(playerTurn,player,lift,called) {
+function playCard(playerTurn,player,lift,called,count) {
   let turn="card"+playerTurn;
   var cardPlayed;
   var card;
@@ -203,6 +203,8 @@ function playCard(playerTurn,player,lift,called) {
   var bare=true;
   var calledTemp;
   var liftWinner;
+  let prevWinner = "";
+  var prevWinNum;
   let playerTurnDisplay = playerTurn+1; 
   let played = "played" + playerTurnDisplay;
   let cards = document.getElementsByClassName(turn);
@@ -221,7 +223,8 @@ function playCard(playerTurn,player,lift,called) {
     hand=cards[i].id;
     if (hand.charAt(0) == called || called == "any" || calledTemp == "any") {
       cards[i].addEventListener("click", function(){
-      if (played == "played1") {
+      if (played == prevWinner) {
+        document.getElementById("played1").innerHTML = "";
         document.getElementById("played2").innerHTML = "";
         document.getElementById("played3").innerHTML = "";
         document.getElementById("played4").innerHTML = "";
@@ -237,11 +240,18 @@ function playCard(playerTurn,player,lift,called) {
       getLift(lift,cardPlayed,playerTurn,called);
       console.log("Lift: " + lift[0], lift[1], lift[2], lift[3]);
       playerTurn+=1;
+      count+=1;
       if (playerTurn == 4) {
         playerTurn=0;
+      }
+      if (count == 4) {
+        count=0;
         called="any";
         liftWinner=checkLift(lift);
         console.log(liftWinner);
+        playerTurn=liftWinner;
+        prevWinNum=liftWinner+1;
+        prevWinner="played"+prevWinNum;
         if (liftWinner == 0) {
           document.getElementById("liftWinner").innerHTML = "Player 1 won the lift for Team 1";
         }
@@ -258,7 +268,7 @@ function playCard(playerTurn,player,lift,called) {
       calledTemp="";
       displayPlayerTurn(playerTurn);
       displayPlayerCards(player);
-      playCard(playerTurn,player,lift,called);
+      playCard(playerTurn,player,lift,called,count);
     });
     }
   }
@@ -290,7 +300,7 @@ function mainGame(player,deck,dealer,playerTurn,lift) {
   console.log("Trump is:", kicked.Suit); */
   score=checkKicked(kicked,score);
   displayPlayerTurn(playerTurn);
-  playCard(playerTurn,player,lift,"any");
+  playCard(playerTurn,player,lift,"any",0);
   game=checkGame(score);
   return game;
 }
