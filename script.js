@@ -107,7 +107,7 @@ function beg(player,playerTurn,lift,deck,called) {
   displayPlayerCards(player);
   let kicked=deck.pop();
   displayKickedCard(kicked);
-  playCard(playerTurn,player,lift,called,0);
+  playCard(playerTurn,player,lift,called,0,kicked);
 }
 
 function createCardId(cards) {
@@ -148,54 +148,60 @@ function displayPlayerTurn(playerTurn) {
   document.getElementById("playerTurn").innerHTML = "It is player " + playerTurnDisplay + "'s turn.";
 }
 
-function getLift(lift,cardPlayed,playerTurn,called) {
-  if (cardPlayed.Suit === called) {
-    if (cardPlayed.Value === "2") {
-      lift[playerTurn] = 2;
-    }
-    else if (cardPlayed.Value === "3") {
-      lift[playerTurn] = 3;
-    }
-    else if (cardPlayed.Value === "4") {
-      lift[playerTurn] = 4;
-    }
-    else if (cardPlayed.Value === "5") {
-      lift[playerTurn] = 5;
-    }
-    else if (cardPlayed.Value === "6") {
-      lift[playerTurn] = 6;
-    }
-    else if (cardPlayed.Value === "7") {
-      lift[playerTurn] = 7;
-    }
-    else if (cardPlayed.Value === "8") {
-      lift[playerTurn] = 8;
-    }
-    else if (cardPlayed.Value === "9") {
-      lift[playerTurn] = 9;
-    }
-    else if (cardPlayed.Value === "X") {
-      lift[playerTurn] = 10;
-    }
-    else if (cardPlayed.Value === "J") {
-      lift[playerTurn] = 11;
-    }
-    else if (cardPlayed.Value === "Q") {
-      lift[playerTurn] = 12;
-    }
-    else if (cardPlayed.Value === "K") {
-      lift[playerTurn] = 13;
-    }
-    else if (cardPlayed.Value === "A") {
-      lift[playerTurn] = 14;
-    }
+function getLift(lift,cardPlayed,playerTurn,called,kicked) {
+  //if (cardPlayed.Suit === called) {
+  if (cardPlayed.Value === "2") {
+    lift[playerTurn] = 2;
   }
-  else {
+  else if (cardPlayed.Value === "3") {
+    lift[playerTurn] = 3;
+  }
+  else if (cardPlayed.Value === "4") {
+    lift[playerTurn] = 4;
+  }
+  else if (cardPlayed.Value === "5") {
+    lift[playerTurn] = 5;
+  }
+  else if (cardPlayed.Value === "6") {
+    lift[playerTurn] = 6;
+  }
+  else if (cardPlayed.Value === "7") {
+    lift[playerTurn] = 7;
+  }
+  else if (cardPlayed.Value === "8") {
+    lift[playerTurn] = 8;
+  }
+  else if (cardPlayed.Value === "9") {
+    lift[playerTurn] = 9;
+  }
+  else if (cardPlayed.Value === "X") {
+    lift[playerTurn] = 10;
+  }
+  else if (cardPlayed.Value === "J") {
+    lift[playerTurn] = 11;
+  }
+  else if (cardPlayed.Value === "Q") {
+    lift[playerTurn] = 12;
+  }
+  else if (cardPlayed.Value === "K") {
+    lift[playerTurn] = 13;
+  }
+  else if (cardPlayed.Value === "A") {
+    lift[playerTurn] = 14;
+  }
+  if (cardPlayed.Suit == kicked.Suit) {
+    lift[playerTurn] += 100;
+  }
+  if (cardPlayed.Suit !== called && cardPlayed.Suit !== kicked.Suit) {
     lift[playerTurn] = 0;
   }
+  //}
+  //else {
+  //  lift[playerTurn] = 0;
+  // }
 }
 
-function playCard(playerTurn,player,lift,called,count) {
+function playCard(playerTurn,player,lift,called,count,kicked) {
   let turn="card"+playerTurn;
   var cardPlayed;
   var card;
@@ -220,7 +226,7 @@ function playCard(playerTurn,player,lift,called,count) {
       calledTemp = "any";
     }
     hand=cards[i].id;
-    if (hand.charAt(0) == called || called == "any" || calledTemp == "any") {
+    if (hand.charAt(0) == called || called == "any" || calledTemp == "any" || hand.charAt(0) == kicked.Suit) {
       cards[i].addEventListener("click", function(){
       countPlayed=count+1;
       played = "played" + countPlayed;
@@ -237,9 +243,7 @@ function playCard(playerTurn,player,lift,called,count) {
       }
       let card = player[playerTurn].cards.findIndex( element => element.Suit === cardPlayed.Suit && element.Value === cardPlayed.Value);
       player[playerTurn].cards.splice(card,1);
-      console.log(player[0].cards);
-      getLift(lift,cardPlayed,playerTurn,called);
-      console.log("Lift: " + lift[0], lift[1], lift[2], lift[3]);
+      getLift(lift,cardPlayed,playerTurn,called,kicked);
       playerTurn+=1;
       count+=1;
       if (playerTurn == 4) {
@@ -269,7 +273,7 @@ function playCard(playerTurn,player,lift,called,count) {
       calledTemp="";
       displayPlayerTurn(playerTurn);
       displayPlayerCards(player);
-      playCard(playerTurn,player,lift,called,count);
+      playCard(playerTurn,player,lift,called,count,kicked);
     });
     }
   }
@@ -301,7 +305,7 @@ function mainGame(player,deck,dealer,playerTurn,lift) {
   console.log("Trump is:", kicked.Suit); */
   score=checkKicked(kicked,score);
   displayPlayerTurn(playerTurn);
-  playCard(playerTurn,player,lift,"any",0);
+  playCard(playerTurn,player,lift,"any",0,kicked);
   game=checkGame(score);
   return game;
 }
