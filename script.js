@@ -335,7 +335,13 @@ function playCard(playerTurn,player,lift,called,count,kicked) {
       calledTemp="";
       displayPlayerTurn(playerTurn);
       displayPlayerCards(player);
-      playCard(playerTurn,player,lift,called,count,kicked);
+      if (player[0].cards.length == 0 && player[1].cards.length == 0 && player[2].cards.length == 0 && player[3].cards.length == 0) {
+        let deck=createDeck();
+        mainGame(player,deck,playerTurn,playerTurn,lift)
+      }
+      else {
+        playCard(playerTurn,player,lift,called,count,kicked);
+      }
     });
     }
   }
