@@ -148,6 +148,7 @@ function displayPlayerTurn(playerTurn) {
   document.getElementById("playerTurn").innerHTML = "It is player " + playerTurnDisplay + "'s turn.";
 }
 
+
 function getLift(lift,cardPlayed,playerTurn,called,kicked) {
   //if (cardPlayed.Suit === called) {
   if (cardPlayed.Value === "2") {
@@ -201,6 +202,64 @@ function getLift(lift,cardPlayed,playerTurn,called,kicked) {
   // }
 }
 
+ function undertrump (lift,hand) {
+  let trumpPlayed=false;
+  var handValue;
+  for (var i=0; i<4; i++) {
+    if (lift[i] > 100) {
+      trumpPlayed = true;
+    }
+  }
+  if (trumpPlayed == false) {
+    return false;
+  }
+  if (hand.charAt(1) === "2") {
+    handValue = 102;
+  }
+  else if (hand.charAt(1) === "3") {
+    handValue = 103;
+  }
+  else if (hand.charAt(1) === "4") {
+    handValue = 104;
+  }
+  else if (hand.charAt(1) === "5") {
+    handValue = 105;
+  }
+  else if (hand.charAt(1) === "6") {
+    handValue = 106;
+  }
+  else if (hand.charAt(1) === "7") {
+    handValue = 107;
+  }
+  else if (hand.charAt(1) === "8") {
+    handValue = 108;
+  }
+  else if (hand.charAt(1) === "9") {
+    handValue = 109;
+  }
+  else if (hand.charAt(1) === "X") {
+    handValue = 110;
+  }
+  else if (hand.charAt(1) === "J") {
+    handValue = 111;
+  }
+  else if (hand.charAt(1) === "Q") {
+    handValue = 112;
+  }
+  else if (hand.charAt(1) === "K") {
+    handValue = 113;
+  }
+  else if (hand.charAt(1) === "A") {
+    handValue = 114;
+  }
+  for (var i=0; i<4; i++) {
+    if (lift[i] > handValue) {
+      return true;
+    }
+  }
+  return false;
+} 
+
 function playCard(playerTurn,player,lift,called,count,kicked) {
   let turn="card"+playerTurn;
   var cardPlayed;
@@ -210,6 +269,7 @@ function playCard(playerTurn,player,lift,called,count,kicked) {
   var calledTemp;
   var liftWinner;
   var countPlayed;
+  var undertrumped;
   let playerTurnDisplay = playerTurn+1; 
   var played;
   let cards = document.getElementsByClassName(turn);
@@ -226,7 +286,8 @@ function playCard(playerTurn,player,lift,called,count,kicked) {
       calledTemp = "any";
     }
     hand=cards[i].id;
-    if (hand.charAt(0) == called || called == "any" || calledTemp == "any" || hand.charAt(0) == kicked.Suit) {
+    undertrumped=undertrump(lift,hand);
+    if (hand.charAt(0) == called || called == "any" || calledTemp == "any" || (hand.charAt(0) == kicked.Suit && undertrumped == false)) {
       cards[i].addEventListener("click", function(){
       countPlayed=count+1;
       played = "played" + countPlayed;
@@ -244,6 +305,7 @@ function playCard(playerTurn,player,lift,called,count,kicked) {
       let card = player[playerTurn].cards.findIndex( element => element.Suit === cardPlayed.Suit && element.Value === cardPlayed.Value);
       player[playerTurn].cards.splice(card,1);
       getLift(lift,cardPlayed,playerTurn,called,kicked);
+      console.log(lift[0],lift[1],lift[2],lift[3]);
       playerTurn+=1;
       count+=1;
       if (playerTurn == 4) {
@@ -254,9 +316,9 @@ function playCard(playerTurn,player,lift,called,count,kicked) {
         called="any";
         liftWinner=checkLift(lift);
         playerTurn=liftWinner;
-        //prevWinNum=liftWinner+1;
-        //prevWinner="played"+prevWinNum;
-        //console.log("PW: " + prevWinner);
+        for (var j=0; j<4; j++) {
+          lift[j] = 0;
+        }
         if (liftWinner == 0) {
           document.getElementById("liftWinner").innerHTML = "Player 1 won the lift for Team 1";
         }
