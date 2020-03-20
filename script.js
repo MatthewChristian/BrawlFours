@@ -102,11 +102,23 @@ function checkKicked(kicked,score) {
   return score;
 }
 
-function beg(player,playerTurn,lift,deck,called) {
+function beg(player,playerTurn,lift,deck,called,kicked) {
+  let prevKicked=kicked;
+  console.log("PK: " + prevKicked.Suit + prevKicked.Value);
   dealAll(player,deck);
-  displayPlayerCards(player);
-  let kicked=deck.pop();
+  kicked=deck.pop();
   displayKickedCard(kicked);
+  if (kicked.Suit === prevKicked.Suit) {
+    dealAll(player,deck);
+    kicked=deck.pop();
+    displayKickedCard(kicked);
+    if (kicked.Suit === prevKicked.Suit) {
+      kicked=deck.pop();
+      displayKickedCard(kicked);
+    }
+  }
+  displayPlayerCards(player);
+  document.getElementById("begButton").removeAttribute("onclick");
   playCard(playerTurn,player,lift,called,0,kicked);
 }
 
@@ -119,7 +131,7 @@ function createCardId(cards) {
 function displayKickedCard(kicked) {
   var kick;
   kick = document.getElementById("kicked");
-  kick.innerHTML = "Kicked: " + kicked.Suit + kicked.Value;
+  kick.innerHTML += kicked.Suit + kicked.Value +", ";
 }
 
 function displayPlayerCards(player) {
@@ -337,7 +349,8 @@ function playCard(playerTurn,player,lift,called,count,kicked) {
       displayPlayerCards(player);
       if (player[0].cards.length == 0 && player[1].cards.length == 0 && player[2].cards.length == 0 && player[3].cards.length == 0) {
         let deck=createDeck();
-        mainGame(player,deck,playerTurn,playerTurn,lift)
+        kicked=deck.pop();
+        mainGame(player,deck,playerTurn,playerTurn,lift,kicked)
       }
       else {
         playCard(playerTurn,player,lift,called,count,kicked);
@@ -354,7 +367,8 @@ function getCard(cardId) {
   return card;
 }
 
-function mainGame(player,deck,dealer,playerTurn,lift) {
+
+function mainGame(player,deck,dealer,playerTurn,lift,kicked) {
   for (var i=0; i<4; i++) {
     player[i] = new Hand();
   }
@@ -365,12 +379,7 @@ function mainGame(player,deck,dealer,playerTurn,lift) {
   for (var i=0; i<2; i++) {
     dealAll(player,deck);
   }
-  let kicked=deck.pop();
   displayCards(player,kicked);
-  /* for (var i=0; i<4; i++) {
-    console.log("Player", i+1, ": ", player[i].cards);
-  }
-  console.log("Trump is:", kicked.Suit); */
   score=checkKicked(kicked,score);
   displayPlayerTurn(playerTurn);
   playCard(playerTurn,player,lift,"any",0,kicked);
@@ -384,8 +393,9 @@ let playerTurn=0;
 let player = [];
 let lift = [0,0,0,0,0,0]; //Index 0 - 3 = Players 1 - 4 points, Index 4 = Team 1 total points for game, Index 5 = Team 2 total points for game
 let deck=createDeck();
+let kicked=deck.pop();
 //while (game == 0) {
-  game=mainGame(player,deck,dealer,playerTurn,lift);
+  game=mainGame(player,deck,dealer,playerTurn,lift,kicked);
 /*  dealer++;
   if (dealer == 5) {
     dealer=1;
