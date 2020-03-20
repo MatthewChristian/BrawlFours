@@ -347,10 +347,12 @@ function playCard(playerTurn,player,lift,called,count,kicked) {
       calledTemp="";
       displayPlayerTurn(playerTurn);
       displayPlayerCards(player);
-      if (player[0].cards.length == 0 && player[1].cards.length == 0 && player[2].cards.length == 0 && player[3].cards.length == 0) {
+      if (player[0].cards.length == 0 && player[1].cards.length == 0 && player[2].cards.length == 0 && player[3].cards.length == 0) //If nobody has cards left 
+      {
         let deck=createDeck();
         kicked=deck.pop();
-        mainGame(player,deck,playerTurn,playerTurn,lift,kicked)
+        document.getElementById("begButton").setAttribute("onclick", "beg(player,playerTurn,lift,deck,'any',kicked)");
+        mainGame(player,deck,playerTurn,playerTurn,lift,kicked);
       }
       else {
         playCard(playerTurn,player,lift,called,count,kicked);
@@ -376,6 +378,12 @@ function mainGame(player,deck,dealer,playerTurn,lift,kicked) {
   let score = [];
   score[0] = 0; //Team 1 Score
   score[1] = 0; //Team 2 Score
+  document.getElementById("played1").innerHTML = "";
+  document.getElementById("played2").innerHTML = "";
+  document.getElementById("played3").innerHTML = "";
+  document.getElementById("played4").innerHTML = "";
+  document.getElementById("kicked").innerHTML = "Kicked: ";
+  document.getElementById("liftWinner").innerHTML = "";
   for (var i=0; i<2; i++) {
     dealAll(player,deck);
   }
