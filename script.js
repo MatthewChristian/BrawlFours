@@ -301,6 +301,7 @@ function playCard(playerTurn,player,lift,called,count,kicked) {
     undertrumped=undertrump(lift,hand);
     if (hand.charAt(0) == called || called == "any" || calledTemp == "any" || (hand.charAt(0) == kicked.Suit && undertrumped == false)) {
       cards[i].addEventListener("click", function(){
+      document.getElementById("begButton").removeAttribute("onclick");
       countPlayed=count+1;
       played = "played" + countPlayed;
       if (count == 0) {
