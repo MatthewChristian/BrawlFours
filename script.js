@@ -160,9 +160,51 @@ function displayPlayerTurn(playerTurn) {
   document.getElementById("playerTurn").innerHTML = "It is player " + playerTurnDisplay + "'s turn.";
 }
 
+function displayPoints(lift) {
+  let team1=document.getElementById("score1");
+  let team2=document.getElementById("score2");
+  team1.innerHTML = "Team 1 Score: " + lift[4];
+  team2.innerHTML = "Team 2 Score: " + lift[5];
+}
+
+function determineGame(lift) {
+  if (lift[4] > lift[5]) {
+    document.getElementById("gameWinner").innerHTML = "Team 1 won game.";
+  }
+  else {
+    document.getElementById("gameWinner").innerHTML = "Team 2 won game.";
+  }
+}
+
+function getPoints(lift,liftWinner) {
+  let points = 0;
+  for (var i=0; i<4; i++) {
+    if (lift[i] === 10 || lift[i] === 110 || lift[i] === -90) {
+      points += 10;
+    }
+    if (lift[i] === 11 || lift[i] === 111 || lift[i] === -89) {
+      points += 1;
+    }
+    if (lift[i] === 12 || lift[i] === 112 || lift[i] === -88) {
+      points += 2;
+    }
+    if (lift[i] === 13 || lift[i] === 113 || lift[i] === -87) {
+      points += 3;
+    }
+    if (lift[i] === 14 || lift[i] === 114 || lift[i] === -86) {
+      points += 4;
+    }
+  }
+  if (liftWinner == 0 || liftWinner == 2) {
+    lift[4] += points;
+  }
+  else {
+    lift[5] += points;
+  }
+}
+
 
 function getLift(lift,cardPlayed,playerTurn,called,kicked) {
-  //if (cardPlayed.Suit === called) {
   if (cardPlayed.Value === "2") {
     lift[playerTurn] = 2;
   }
@@ -206,12 +248,8 @@ function getLift(lift,cardPlayed,playerTurn,called,kicked) {
     lift[playerTurn] += 100;
   }
   if (cardPlayed.Suit !== called && cardPlayed.Suit !== kicked.Suit) {
-    lift[playerTurn] = 0;
+    lift[playerTurn] = lift[playerTurn] - 100;
   }
-  //}
-  //else {
-  //  lift[playerTurn] = 0;
-  // }
 }
 
  function undertrump (lift,hand) {
@@ -284,6 +322,7 @@ function playCard(playerTurn,player,lift,called,count,kicked) {
   var undertrumped;
   let playerTurnDisplay = playerTurn+1; 
   var played;
+  var points;
   let cards = document.getElementsByClassName(turn);
   for (var i=0; i<cards.length; i++) {
     if (called !== "any") {
@@ -318,7 +357,7 @@ function playCard(playerTurn,player,lift,called,count,kicked) {
       let card = player[playerTurn].cards.findIndex( element => element.Suit === cardPlayed.Suit && element.Value === cardPlayed.Value);
       player[playerTurn].cards.splice(card,1);
       getLift(lift,cardPlayed,playerTurn,called,kicked);
-      console.log(lift[0],lift[1],lift[2],lift[3]);
+      console.log(lift[0],lift[1],lift[2],lift[3],lift[4],lift[5]);
       playerTurn+=1;
       count+=1;
       if (playerTurn == 4) {
@@ -329,9 +368,6 @@ function playCard(playerTurn,player,lift,called,count,kicked) {
         called="any";
         liftWinner=checkLift(lift);
         playerTurn=liftWinner;
-        for (var j=0; j<4; j++) {
-          lift[j] = 0;
-        }
         if (liftWinner == 0) {
           document.getElementById("liftWinner").innerHTML = "Player 1 won the lift for Team 1";
         }
@@ -344,12 +380,21 @@ function playCard(playerTurn,player,lift,called,count,kicked) {
         else if (liftWinner == 3){
           document.getElementById("liftWinner").innerHTML = "Player 4 won the lift for Team 2";
         }
+        points = getPoints(lift,liftWinner);
+        for (var j=0; j<4; j++) {
+          lift[j] = 0;
+        }
       }
       calledTemp="";
       displayPlayerTurn(playerTurn);
       displayPlayerCards(player);
+      displayPoints(lift);
       if (player[0].cards.length == 0 && player[1].cards.length == 0 && player[2].cards.length == 0 && player[3].cards.length == 0) //If nobody has cards left 
       {
+        determineGame(lift);
+        for (var j=4; j<6; j++) {
+          lift[j] = 0;
+        }
         let deck=createDeck();
         kicked=deck.pop();
         document.getElementById("begButton").setAttribute("onclick", "beg(player,playerTurn,lift,deck,'any',kicked)");
