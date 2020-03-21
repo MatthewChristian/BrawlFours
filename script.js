@@ -118,7 +118,7 @@ function beg(player,playerTurn,lift,deck,called,kicked) {
     }
   }
   displayPlayerCards(player);
-  document.getElementById("begButton").removeAttribute("onclick");
+  document.getElementById("begButton").removeEventListener("click", letBeg);
   playCard(playerTurn,player,lift,called,0,kicked);
 }
 
@@ -340,7 +340,7 @@ function playCard(playerTurn,player,lift,called,count,kicked) {
     undertrumped=undertrump(lift,hand);
     if (hand.charAt(0) == called || called == "any" || calledTemp == "any" || (hand.charAt(0) == kicked.Suit && undertrumped == false)) {
       cards[i].addEventListener("click", function(){
-      document.getElementById("begButton").removeAttribute("onclick");
+      document.getElementById("begButton").removeEventListener("click", letBeg);
       countPlayed=count+1;
       played = "played" + countPlayed;
       if (count == 0) {
@@ -397,7 +397,7 @@ function playCard(playerTurn,player,lift,called,count,kicked) {
         }
         let deck=createDeck();
         kicked=deck.pop();
-        document.getElementById("begButton").setAttribute("onclick", "beg(player,playerTurn,lift,deck,'any',kicked)");
+        document.getElementById("begButton").addEventListener("click", letBeg);
         mainGame(player,deck,playerTurn,playerTurn,lift,kicked);
       }
       else {
@@ -415,6 +415,10 @@ function getCard(cardId) {
   return card;
 }
 
+function letBeg() {
+  beg(player,playerTurn,lift,deck,"any",kicked);
+}
+
 
 function mainGame(player,deck,dealer,playerTurn,lift,kicked) {
   for (var i=0; i<4; i++) {
@@ -430,6 +434,7 @@ function mainGame(player,deck,dealer,playerTurn,lift,kicked) {
   document.getElementById("played4").innerHTML = "";
   document.getElementById("kicked").innerHTML = "Kicked: ";
   document.getElementById("liftWinner").innerHTML = "";
+  document.getElementById("begButton").addEventListener("click",letBeg);
   for (var i=0; i<2; i++) {
     dealAll(player,deck);
   }
