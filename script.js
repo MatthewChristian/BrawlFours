@@ -75,8 +75,6 @@ function checkLift(lift) {
       highIndex=i;
     }
   }
-  //lift[4]+=team1;
-  //lift[5]+=team2;
   return highIndex;
 }
 
@@ -189,13 +187,21 @@ function determineHighLow(highLow) {
 }
 
 function determineJackWinner(jackWinner) {
-  if (jackWinner == 1) {
+  if (jackWinner[0] == 1 && jackWinner[1] == 1) { // Team 1 won, no hang
     document.getElementById("jackWinner").innerHTML = "Team 1 won Jack.";
-    return 1;
+    jackWinner[2] = 1;
   }
-  else {
+  else if (jackWinner[0] == 2 && jackWinner [1] == 2) { //Team 2 won, no hang
     document.getElementById("jackWinner").innerHTML = "Team 2 won Jack.";
-    return 2;
+    jackWinner[2] = 2;
+  }
+  else if (jackWinner[0] == 2 && jackWinner[1] == 1 ) { //Team 1 won, hang
+    document.getElementById("jackWinner").innerHTML = "Team 1 hung Jack!";
+    jackWinner[2] = 3;
+  }
+  else if (jackWinner[0] == 1 && jackWinner[1] == 2 ) { //Team 2 won, hang
+    document.getElementById("jackWinner").innerHTML = "Team 2 hung Jack!";
+    jackWinner[2] = 4;
   }
 }
 
@@ -219,11 +225,17 @@ function determinePoints(gameWinner, highLow, jackWinner) {
   else {
     points[1]++;
   }
-  if (jackWinner == 1) {
+  if (jackWinner[2] == 1) {
     points[0]++;
   }
-  else {
+  else if (jackWinner[2] == 2) {
     points[1]++;
+  }
+  else if (jackWinner[2] == 3) {
+    points[0] += 3;
+  }
+  else if (jackWinner[2] == 4) {
+    points[1] += 3;
   }
   return points;
 }
@@ -425,7 +437,7 @@ function playCard(playerTurn,player,lift,called,count,kicked,highLow) {
   var team;
   var gameWinner;
   var totalPoints;
-  var jackWinner;
+  var jackInPlay=false;
   if (playerTurn == 0 || playerTurn == 2) {
     team = 1;
   }
@@ -476,12 +488,28 @@ function playCard(playerTurn,player,lift,called,count,kicked,highLow) {
           highLow[1] = team;
           highLow[3] = value;
         }
-        if (value = 11) {
-          jackWinner = team;
+        if (value == 1) {
+          console.log("Jack Played");
+        }
+        if (value == 11 && jackWinner[0] == 0) { //If jack has not yet been played
+          console.log("JACKEROOO");
+          jackWinner[0] = team;
+          jackWinner[1] = team;
+          jackInPlay = true;
+          console.log("JACK: " + jackWinner[0]);
+          console.log("JACK2: " + jackWinner[1]);
+        }
+        if (value > 11) {
+          console.log("big num");
+        }
+        if (jackInPlay == true) {
+          console.log("Jacks in play!")
+        }
+        if (value > 11 && jackInPlay == true) {
+          console.log("HANG");
+          jackWinner[1] = team;
         }
       }
-      console.log("HIGH: " + highLow[0]);
-      console.log("LOW: " + highLow[1]);
       let card = player[playerTurn].cards.findIndex( element => element.Suit === cardPlayed.Suit && element.Value === cardPlayed.Value);
       player[playerTurn].cards.splice(card,1);
       getLift(lift,cardPlayed,playerTurn,called,kicked);
@@ -490,8 +518,9 @@ function playCard(playerTurn,player,lift,called,count,kicked,highLow) {
       if (playerTurn == 4) {
         playerTurn=0;
       }
-      if (count == 4) {
+      if (count == 4) { //Lift end
         count=0;
+        jackInPlay = false;
         called="any";
         liftWinner=checkLift(lift);
         playerTurn=liftWinner;
@@ -516,11 +545,19 @@ function playCard(playerTurn,player,lift,called,count,kicked,highLow) {
       displayPlayerTurn(playerTurn);
       displayPlayerCards(player);
       displayPoints(lift);
-      if (player[0].cards.length == 0 && player[1].cards.length == 0 && player[2].cards.length == 0 && player[3].cards.length == 0) //If nobody has cards left 
+      if (player[0].cards.length == 0 && player[1].cards.length == 0 && player[2].cards.length == 0 && player[3].cards.length == 0) //If nobody has cards left, round end
       {
         gameWinner = determineGame(lift);
         determineHighLow(highLow);
+
+        console.log("Jack winner[0]: " + jackWinner[0]);
+        console.log("Jack winner[1]: " + jackWinner[1]);
+        console.log("Jack winner[2]: " + jackWinner[2]);
         determineJackWinner(jackWinner);
+        console.log("Jack winner[0]: " + jackWinner[0]);
+        console.log("Jack winner[1]: " + jackWinner[1]);
+        console.log("Jack winner[2]: " + jackWinner[2]);
+        
         totalPoints = determinePoints(gameWinner, highLow, jackWinner);
         displayTotalPoints(totalPoints);
         for (var j=4; j<6; j++) {
@@ -529,11 +566,14 @@ function playCard(playerTurn,player,lift,called,count,kicked,highLow) {
         highLow[0] = 0;
         highLow[1] = 0;
         highLow[2] = 0;
-        highLow[3] = 15;       
+        highLow[3] = 15;  
+        jackWinner[0] = 0;
+        jackWinner[1] = 0;
+        jackWinner[2] = 0;    
         let deck=createDeck();
         kicked=deck.pop();
         document.getElementById("begButton").addEventListener("click", letBeg);
-        mainGame(player,deck,playerTurn,playerTurn,lift,kicked,highLow);
+        mainGame(player,deck,playerTurn,playerTurn,lift,kicked,highLow,jackWinner);
       }
       else {
         playCard(playerTurn,player,lift,called,count,kicked,highLow);
@@ -555,7 +595,7 @@ function letBeg() {
 }
 
 
-function mainGame(player,deck,dealer,playerTurn,lift,kicked,highLow) {
+function mainGame(player,deck,dealer,playerTurn,lift,kicked,highLow,jackWinner) {
   for (var i=0; i<4; i++) {
     player[i] = new Hand();
   }
@@ -587,10 +627,11 @@ let playerTurn=0;
 let player = [];
 let lift = [0,0,0,0,0,0]; //Index 0 - 3: Players 1 - 4 points, Index 4: Team 1 total points for game, Index 5: Team 2 total points for game
 let highLow = [0,0,0,15] //Index 1: Team winning High, Index 2: Team winning Low, Index 3: High, Index 4: Low
+var jackWinner = [0,0,0]; //First index = Who played jack, Second index = Who won jack, Third index = value
 let deck=createDeck();
 let kicked=deck.pop();
 //while (game == 0) {
-  game=mainGame(player,deck,dealer,playerTurn,lift,kicked,highLow);
+  game=mainGame(player,deck,dealer,playerTurn,lift,kicked,highLow,jackWinner);
 /*  dealer++;
   if (dealer == 5) {
     dealer=1;
