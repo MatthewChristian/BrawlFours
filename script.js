@@ -167,18 +167,65 @@ function displayPoints(lift) {
   team2.innerHTML = "Team 2 Score: " + lift[5];
 }
 
+function displayTotalPoints(totalPoints) {
+  let pointDisplay = document.getElementById("totalPoints");
+  pointDisplay.innerHTML = "Score : " + totalPoints[0] + " - " + totalPoints[1];
+}
+
 function determineGame(lift) {
   if (lift[4] > lift[5]) {
     document.getElementById("gameWinner").innerHTML = "Team 1 won game.";
+    return 1;
   }
   else {
     document.getElementById("gameWinner").innerHTML = "Team 2 won game.";
+    return 2;
   }
 }
 
 function determineHighLow(highLow) {
   document.getElementById("highWinner").innerHTML = "Team " + highLow[0] + " won high. ";
   document.getElementById("lowWinner").innerHTML = "Team " + highLow[1] + " won low. ";
+}
+
+function determineJackWinner(jackWinner) {
+  if (jackWinner == 1) {
+    document.getElementById("jackWinner").innerHTML = "Team 1 won Jack.";
+    return 1;
+  }
+  else {
+    document.getElementById("jackWinner").innerHTML = "Team 2 won Jack.";
+    return 2;
+  }
+}
+
+function determinePoints(gameWinner, highLow, jackWinner) {
+  var points = [0,0];
+  if (gameWinner == 1) {
+    points[0]++;
+  }
+  else {
+    points[1]++;
+  }
+  if (highLow[0] == 1) {
+    points[0]++
+  }
+  else {
+    points[1]++;
+  }
+  if (highLow[1] == 1) {
+    points[0]++;
+  }
+  else {
+    points[1]++;
+  }
+  if (jackWinner == 1) {
+    points[0]++;
+  }
+  else {
+    points[1]++;
+  }
+  return points;
 }
 
 function getPoints(lift,liftWinner) {
@@ -376,6 +423,9 @@ function playCard(playerTurn,player,lift,called,count,kicked,highLow) {
   var points;
   var value;
   var team;
+  var gameWinner;
+  var totalPoints;
+  var jackWinner;
   if (playerTurn == 0 || playerTurn == 2) {
     team = 1;
   }
@@ -426,6 +476,9 @@ function playCard(playerTurn,player,lift,called,count,kicked,highLow) {
           highLow[1] = team;
           highLow[3] = value;
         }
+        if (value = 11) {
+          jackWinner = team;
+        }
       }
       console.log("HIGH: " + highLow[0]);
       console.log("LOW: " + highLow[1]);
@@ -465,8 +518,11 @@ function playCard(playerTurn,player,lift,called,count,kicked,highLow) {
       displayPoints(lift);
       if (player[0].cards.length == 0 && player[1].cards.length == 0 && player[2].cards.length == 0 && player[3].cards.length == 0) //If nobody has cards left 
       {
-        determineGame(lift);
+        gameWinner = determineGame(lift);
         determineHighLow(highLow);
+        determineJackWinner(jackWinner);
+        totalPoints = determinePoints(gameWinner, highLow, jackWinner);
+        displayTotalPoints(totalPoints);
         for (var j=4; j<6; j++) {
           lift[j] = 0;
         }
