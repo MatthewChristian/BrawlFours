@@ -145,7 +145,7 @@ function displayPlayerCards(player) {
   for (var i=0; i<4; i++) {
     for (var j=0; j<player[i].cards.length; j++) {
       id=createCardId(player[i].cards[j]);
-      players[i].innerHTML += "<a id='" + id + "' class='card" + i +"'>" + player[i].cards[j].Suit + " " + player[i].cards[j].Value + `</a>, `;
+      players[i].innerHTML += "<a id='" + id + "' class='card" + i +"'>" + "<img src=/Cards/" + player[i].cards[j].Suit + player[i].cards[j].Value + ".png alt='Logo' class='cardImage'>" + `</a> `;
     }
   }
 }
@@ -461,7 +461,7 @@ function playCard(playerTurn,player,lift,called,count,kicked,highLow) {
         document.getElementById("highWinner").innerHTML = "";
         document.getElementById("lowWinner").innerHTML = "";
       }
-      document.getElementById(played).innerHTML = "Player " + playerTurnDisplay + " played " + this.innerHTML;
+      document.getElementById(played).innerHTML = "Player " + playerTurnDisplay + " played " + this.getAttribute('id');
       cardPlayed=getCard(this.id);
       if (called == "any") {
         called=cardPlayed.Suit;
