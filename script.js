@@ -557,6 +557,11 @@ function playCard(playerTurn,player,lift,called,count,kicked,highLow,jackHangerT
         let deck=createDeck();
         kicked=deck.pop();
         document.getElementById("begButton").addEventListener("click", letBeg);
+        totalPoints = checkGame(score);
+        if (totalPoints > 0) {
+              document.getElementById("winner").innerHTML = "The winner is Team " + totalPoints;
+        return;
+        }
         mainGame(player,deck,playerTurn,playerTurn,lift,kicked,highLow,jackWinner,score);
       }
       else {
@@ -580,6 +585,7 @@ function letBeg() {
 
 
 function mainGame(player,deck,dealer,playerTurn,lift,kicked,highLow,jackWinner,score) {
+  var totalPoints;
   for (var i=0; i<4; i++) {
     player[i] = new Hand();
   }
@@ -597,10 +603,13 @@ function mainGame(player,deck,dealer,playerTurn,lift,kicked,highLow,jackWinner,s
   displayCards(player,kicked);
   checkKicked(kicked,score);
   displayScore(score);
+  totalPoints = checkGame(score);
+  if (totalPoints > 0) {
+    document.getElementById("winner").innerHTML = "The winner is Team " + totalPoints;
+    return;
+  }
   displayPlayerTurn(playerTurn);
   playCard(playerTurn,player,lift,"any",0,kicked,highLow,0,0,false,score);
-  game=checkGame(score);
-  return game;
 }
 
 let game=0;
@@ -623,6 +632,7 @@ let kicked=deck.pop();
   game=0;
 } 
 console.log("The winner is: ", game); */
+
 
 
 
