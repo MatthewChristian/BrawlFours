@@ -97,10 +97,9 @@ function checkKicked(kicked,score) {
     else
       score[1]++;
   }
-  return score;
 }
 
-function beg(player,playerTurn,lift,deck,called,kicked,highLow) {
+function beg(player,playerTurn,lift,deck,called,kicked,highLow,score) {
   let prevKicked=kicked;
   console.log("PK: " + prevKicked.Suit + prevKicked.Value);
   dealAll(player,deck);
@@ -117,7 +116,7 @@ function beg(player,playerTurn,lift,deck,called,kicked,highLow) {
   }
   displayPlayerCards(player);
   document.getElementById("begButton").removeEventListener("click", letBeg);
-  playCard(playerTurn,player,lift,called,0,kicked,highLow,0,0,false);
+  playCard(playerTurn,player,lift,called,0,kicked,highLow,0,0,false,score);
 }
 
 function createCardId(cards) {
@@ -165,9 +164,9 @@ function displayPoints(lift) {
   team2.innerHTML = "Team 2 Score: " + lift[5];
 }
 
-function displayTotalPoints(totalPoints) {
-  let pointDisplay = document.getElementById("totalPoints");
-  pointDisplay.innerHTML = "Score : " + totalPoints[0] + " - " + totalPoints[1];
+function displayScore(score) {
+  let pointDisplay = document.getElementById("totalScore");
+  pointDisplay.innerHTML = "Score : " + score[0] + " - " + score[1];
 }
 
 function determineGame(lift) {
@@ -205,39 +204,37 @@ function determineJackWinner(jackWinner) {
   }
 }
 
-function determinePoints(gameWinner, highLow, jackWinner) {
-  var points = [0,0];
+function determineScore(gameWinner, highLow, jackWinner, score) {
   if (gameWinner == 1) {
-    points[0]++;
+    score[0]++;
   }
   else {
-    points[1]++;
+    score[1]++;
   }
   if (highLow[0] == 1) {
-    points[0]++
+    score[0]++
   }
   else {
-    points[1]++;
+    score[1]++;
   }
   if (highLow[1] == 1) {
-    points[0]++;
+    score[0]++;
   }
   else {
-    points[1]++;
+    score[1]++;
   }
   if (jackWinner[2] == 1) {
-    points[0]++;
+    score[0]++;
   }
   else if (jackWinner[2] == 2) {
-    points[1]++;
+    score[1]++;
   }
   else if (jackWinner[2] == 3) {
-    points[0] += 3;
+    score[0] += 3;
   }
   else if (jackWinner[2] == 4) {
-    points[1] += 3;
+    score[1] += 3;
   }
-  return points;
 }
 
 function getPoints(lift,liftWinner) {
@@ -420,7 +417,7 @@ function getCardValue(card) {
 }
 
 
-function playCard(playerTurn,player,lift,called,count,kicked,highLow,jackHangerTeam,jackHangerValue,jackInPlay) {
+function playCard(playerTurn,player,lift,called,count,kicked,highLow,jackHangerTeam,jackHangerValue,jackInPlay,score) {
   let turn="card"+playerTurn;
   var cardPlayed;
   var card;
@@ -487,23 +484,15 @@ function playCard(playerTurn,player,lift,called,count,kicked,highLow,jackHangerT
           highLow[1] = team;
           highLow[3] = value;
         }
-        if (value == 1) {
-          console.log("Jack Played");
-        }
         if (value == 11 && jackWinner[0] == 0) { //If jack has not yet been played
-          console.log("JACKEROOO");
           jackWinner[0] = team;
           jackWinner[1] = team;
           jackInPlay = true;
-          console.log("JACK: " + jackWinner[0]);
-          console.log("JACK2: " + jackWinner[1]);
         }
         if (value > 11 && jackInPlay == true) {
-          console.log("HANG");
           jackWinner[1] = team;
         }
         if (value > 11 && value > jackHangerValue) {
-          console.log("Hang2");
           jackHangerTeam = team;
           jackHangerValue = value;
         }
@@ -518,7 +507,6 @@ function playCard(playerTurn,player,lift,called,count,kicked,highLow,jackHangerT
       }
       if (count == 4) { //Lift end
         count=0;
-        console.log("Jack Hanger Team: " + jackHangerTeam);
         if (jackHangerTeam > 0 && jackInPlay) {
           jackWinner[1] = jackHangerTeam;
         }
@@ -553,17 +541,9 @@ function playCard(playerTurn,player,lift,called,count,kicked,highLow,jackHangerT
       {
         gameWinner = determineGame(lift);
         determineHighLow(highLow);
-
-        console.log("Jack winner[0]: " + jackWinner[0]);
-        console.log("Jack winner[1]: " + jackWinner[1]);
-        console.log("Jack winner[2]: " + jackWinner[2]);
-        determineJackWinner(jackWinner);
-        console.log("Jack winner[0]: " + jackWinner[0]);
-        console.log("Jack winner[1]: " + jackWinner[1]);
-        console.log("Jack winner[2]: " + jackWinner[2]);
-        
-        totalPoints = determinePoints(gameWinner, highLow, jackWinner);
-        displayTotalPoints(totalPoints);
+        determineJackWinner(jackWinner);   
+        determineScore(gameWinner, highLow, jackWinner, score);
+        displayScore(score);
         for (var j=4; j<6; j++) {
           lift[j] = 0;
         }
@@ -577,10 +557,10 @@ function playCard(playerTurn,player,lift,called,count,kicked,highLow,jackHangerT
         let deck=createDeck();
         kicked=deck.pop();
         document.getElementById("begButton").addEventListener("click", letBeg);
-        mainGame(player,deck,playerTurn,playerTurn,lift,kicked,highLow,jackWinner);
+        mainGame(player,deck,playerTurn,playerTurn,lift,kicked,highLow,jackWinner,score);
       }
       else {
-        playCard(playerTurn,player,lift,called,count,kicked,highLow,jackHangerTeam,jackHangerValue,jackInPlay);
+        playCard(playerTurn,player,lift,called,count,kicked,highLow,jackHangerTeam,jackHangerValue,jackInPlay,score);
       }
     });
     }
@@ -595,18 +575,15 @@ function getCard(cardId) {
 }
 
 function letBeg() {
-  beg(player,playerTurn,lift,deck,"any",kicked,highLow);
+  beg(player,playerTurn,lift,deck,"any",kicked,highLow,score);
 }
 
 
-function mainGame(player,deck,dealer,playerTurn,lift,kicked,highLow,jackWinner) {
+function mainGame(player,deck,dealer,playerTurn,lift,kicked,highLow,jackWinner,score) {
   for (var i=0; i<4; i++) {
     player[i] = new Hand();
   }
   let game=0;
-  let score = [];
-  score[0] = 0; //Team 1 Score
-  score[1] = 0; //Team 2 Score
   document.getElementById("played1").innerHTML = "";
   document.getElementById("played2").innerHTML = "";
   document.getElementById("played3").innerHTML = "";
@@ -618,24 +595,26 @@ function mainGame(player,deck,dealer,playerTurn,lift,kicked,highLow,jackWinner) 
     dealAll(player,deck);
   }
   displayCards(player,kicked);
-  score=checkKicked(kicked,score);
+  checkKicked(kicked,score);
+  displayScore(score);
   displayPlayerTurn(playerTurn);
-  playCard(playerTurn,player,lift,"any",0,kicked,highLow,0,0,false);
+  playCard(playerTurn,player,lift,"any",0,kicked,highLow,0,0,false,score);
   game=checkGame(score);
   return game;
 }
 
 let game=0;
-let dealer=0;
+let dealer=1;
 let playerTurn=0;
 let player = [];
 let lift = [0,0,0,0,0,0]; //Index 0 - 3: Players 1 - 4 points, Index 4: Team 1 total points for game, Index 5: Team 2 total points for game
-let highLow = [0,0,0,15] //Index 1: Team winning High, Index 2: Team winning Low, Index 3: High, Index 4: Low
+let highLow = [0,0,0,15]; //Index 1: Team winning High, Index 2: Team winning Low, Index 3: High, Index 4: Low
 var jackWinner = [0,0,0]; //First index = Who played jack, Second index = Who won jack, Third index = value
+var score = [0,0];
 let deck=createDeck();
 let kicked=deck.pop();
 //while (game == 0) {
-  game=mainGame(player,deck,dealer,playerTurn,lift,kicked,highLow,jackWinner);
+  game=mainGame(player,deck,dealer,playerTurn,lift,kicked,highLow,jackWinner,score);
 /*  dealer++;
   if (dealer == 5) {
     dealer=1;
