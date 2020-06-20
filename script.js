@@ -117,7 +117,7 @@ function beg(player,playerTurn,lift,deck,called,kicked,highLow) {
   }
   displayPlayerCards(player);
   document.getElementById("begButton").removeEventListener("click", letBeg);
-  playCard(playerTurn,player,lift,called,0,kicked,highLow);
+  playCard(playerTurn,player,lift,called,0,kicked,highLow,0,0,false);
 }
 
 function createCardId(cards) {
@@ -420,7 +420,7 @@ function getCardValue(card) {
 }
 
 
-function playCard(playerTurn,player,lift,called,count,kicked,highLow) {
+function playCard(playerTurn,player,lift,called,count,kicked,highLow,jackHangerTeam,jackHangerValue,jackInPlay) {
   let turn="card"+playerTurn;
   var cardPlayed;
   var card;
@@ -437,7 +437,6 @@ function playCard(playerTurn,player,lift,called,count,kicked,highLow) {
   var team;
   var gameWinner;
   var totalPoints;
-  var jackInPlay=false;
   if (playerTurn == 0 || playerTurn == 2) {
     team = 1;
   }
@@ -478,7 +477,7 @@ function playCard(playerTurn,player,lift,called,count,kicked,highLow) {
       if (called == "any") {
         called=cardPlayed.Suit;
       }
-      if (cardPlayed.Suit == kicked.Suit) {
+      if (cardPlayed.Suit == kicked.Suit) { //If trump is played
         value=getCardValue(cardPlayed);
         if (value > highLow[2]) {
           highLow[0] = team;
@@ -499,15 +498,14 @@ function playCard(playerTurn,player,lift,called,count,kicked,highLow) {
           console.log("JACK: " + jackWinner[0]);
           console.log("JACK2: " + jackWinner[1]);
         }
-        if (value > 11) {
-          console.log("big num");
-        }
-        if (jackInPlay == true) {
-          console.log("Jacks in play!")
-        }
         if (value > 11 && jackInPlay == true) {
           console.log("HANG");
           jackWinner[1] = team;
+        }
+        if (value > 11 && value > jackHangerValue) {
+          console.log("Hang2");
+          jackHangerTeam = team;
+          jackHangerValue = value;
         }
       }
       let card = player[playerTurn].cards.findIndex( element => element.Suit === cardPlayed.Suit && element.Value === cardPlayed.Value);
@@ -520,6 +518,12 @@ function playCard(playerTurn,player,lift,called,count,kicked,highLow) {
       }
       if (count == 4) { //Lift end
         count=0;
+        console.log("Jack Hanger Team: " + jackHangerTeam);
+        if (jackHangerTeam > 0 && jackInPlay) {
+          jackWinner[1] = jackHangerTeam;
+        }
+        jackHangerTeam = 0;
+        jackHangerValue = 0; 
         jackInPlay = false;
         called="any";
         liftWinner=checkLift(lift);
@@ -576,7 +580,7 @@ function playCard(playerTurn,player,lift,called,count,kicked,highLow) {
         mainGame(player,deck,playerTurn,playerTurn,lift,kicked,highLow,jackWinner);
       }
       else {
-        playCard(playerTurn,player,lift,called,count,kicked,highLow);
+        playCard(playerTurn,player,lift,called,count,kicked,highLow,jackHangerTeam,jackHangerValue,jackInPlay);
       }
     });
     }
@@ -616,7 +620,7 @@ function mainGame(player,deck,dealer,playerTurn,lift,kicked,highLow,jackWinner) 
   displayCards(player,kicked);
   score=checkKicked(kicked,score);
   displayPlayerTurn(playerTurn);
-  playCard(playerTurn,player,lift,"any",0,kicked,highLow);
+  playCard(playerTurn,player,lift,"any",0,kicked,highLow,0,0,false);
   game=checkGame(score);
   return game;
 }
