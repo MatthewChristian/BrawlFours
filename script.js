@@ -553,7 +553,15 @@ function playCard(playerTurn,player,lift,called,count,kicked,highLow,jackHangerT
         highLow[3] = 15;  
         jackWinner[0] = 0;
         jackWinner[1] = 0;
-        jackWinner[2] = 0;    
+        jackWinner[2] = 0;  
+        dealer++;
+        if (dealer == 5) {
+          dealer = 1;
+        }
+        playerTurn = dealer;
+        if (playerTurn == 4) {
+          playerTurn = 0;
+        }
         let deck=createDeck();
         kicked=deck.pop();
         document.getElementById("begButton").addEventListener("click", letBeg);
@@ -562,7 +570,7 @@ function playCard(playerTurn,player,lift,called,count,kicked,highLow,jackHangerT
               document.getElementById("winner").innerHTML = "The winner is Team " + totalPoints;
         return;
         }
-        mainGame(player,deck,playerTurn,playerTurn,lift,kicked,highLow,jackWinner,score);
+        mainGame(player,deck,dealer,playerTurn,lift,kicked,highLow,jackWinner,score);
       }
       else {
         playCard(playerTurn,player,lift,called,count,kicked,highLow,jackHangerTeam,jackHangerValue,jackInPlay,score);
@@ -613,7 +621,7 @@ function mainGame(player,deck,dealer,playerTurn,lift,kicked,highLow,jackWinner,s
 }
 
 let game=0;
-let dealer=1;
+let dealer=4;
 let playerTurn=0;
 let player = [];
 let lift = [0,0,0,0,0,0]; //Index 0 - 3: Players 1 - 4 points, Index 4: Team 1 total points for game, Index 5: Team 2 total points for game
