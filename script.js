@@ -101,21 +101,27 @@ function checkKicked(kicked,score) {
 
 function beg(player,playerTurn,lift,deck,called,kicked,highLow,score) {
   let prevKicked=kicked;
-  console.log("PK: " + prevKicked.Suit + prevKicked.Value);
   dealAll(player,deck);
   kicked=deck.pop();
+  checkKicked(kicked, score);
+  displayScore(score);
   displayKickedCard(kicked);
   if (kicked.Suit === prevKicked.Suit) {
     dealAll(player,deck);
     kicked=deck.pop();
+    checkKicked(kicked, score);
+    displayScore(score);
     displayKickedCard(kicked);
     if (kicked.Suit === prevKicked.Suit) {
       kicked=deck.pop();
+      checkKicked(kicked, score);
+      displayScore(score);
       displayKickedCard(kicked);
     }
   }
   displayPlayerCards(player);
   document.getElementById("begButton").removeEventListener("click", letBeg);
+  document.getElementById("beg").style.visibility = "hidden";
   playCard(playerTurn,player,lift,called,0,kicked,highLow,0,0,false,score);
 }
 
@@ -458,6 +464,7 @@ function playCard(playerTurn,player,lift,called,count,kicked,highLow,jackHangerT
     if (hand.charAt(0) == called || called == "any" || calledTemp == "any" || (hand.charAt(0) == kicked.Suit && undertrumped == false)) {
       cards[i].addEventListener("click", function(){
       document.getElementById("begButton").removeEventListener("click", letBeg);
+      document.getElementById("beg").style.visibility = "hidden";
       countPlayed=count+1;
       played = "played" + countPlayed;
       if (count == 0) {
@@ -565,6 +572,7 @@ function playCard(playerTurn,player,lift,called,count,kicked,highLow,jackHangerT
         let deck=createDeck();
         kicked=deck.pop();
         document.getElementById("begButton").addEventListener("click", letBeg);
+        document.getElementById("beg").style.visibility = "visible";
         totalPoints = checkGame(score);
         if (totalPoints > 0) {
               document.getElementById("winner").innerHTML = "The winner is Team " + totalPoints;
@@ -605,6 +613,7 @@ function mainGame(player,deck,dealer,playerTurn,lift,kicked,highLow,jackWinner,s
   document.getElementById("kicked").innerHTML = "Kicked: ";
   document.getElementById("liftWinner").innerHTML = "";
   document.getElementById("begButton").addEventListener("click",letBeg);
+  document.getElementById("beg").style.visibility = "visible";
   for (var i=0; i<2; i++) {
     dealAll(player,deck);
   }
@@ -630,16 +639,7 @@ var jackWinner = [0,0,0]; //First index = Who played jack, Second index = Who wo
 var score = [0,0];
 let deck=createDeck();
 let kicked=deck.pop();
-//while (game == 0) {
-  game=mainGame(player,deck,dealer,playerTurn,lift,kicked,highLow,jackWinner,score);
-/*  dealer++;
-  if (dealer == 5) {
-    dealer=1;
-  }
-  displayPlayerTurn(playerTurn);
-  game=0;
-} 
-console.log("The winner is: ", game); */
+game=mainGame(player,deck,dealer,playerTurn,lift,kicked,highLow,jackWinner,score);
 
 
 
